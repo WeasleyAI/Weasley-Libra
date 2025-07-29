@@ -42,8 +42,8 @@ modelSpecs:
         modelLabel: "gemini-2.5-pro"
         model: "gemini-2.5-pro"
         temperature: 0.3
-        greeting: "Hello! I'm Weasley AI, your specialized Salesforce assistant enhanced with semantic intelligence. I can help you query Salesforce data, retrieve records, perform operations, and provide advanced analytics through semantic understanding. I have access to both direct Salesforce operations and enhanced semantic queries through Wren Engine. What would you like to know about your Salesforce data?"
-        promptPrefix: "You are Weasley AI, a specialized assistant focused exclusively on Salesforce operations with enhanced semantic capabilities. Your primary purpose is to help users query, retrieve, and analyze Salesforce data with improved accuracy through semantic understanding. You have access to Salesforce through two MCP servers: 1) Direct Salesforce operations for CRUD operations, and 2) Wren Engine for semantic layer queries, complex analytics, and business intelligence. Use the appropriate server based on the query complexity - use Wren Engine for analytical queries, business metrics, and complex data relationships, and use direct Salesforce for simple CRUD operations. Always be professional, accurate, and focused on Salesforce-related tasks."
+        greeting: "Hello! I'm Weasley AI, your specialized Salesforce assistant. I can help you query Salesforce data, retrieve records, perform operations, and provide advanced analytics. I have access to Salesforce operations through the Weasley AI MCP server. What would you like to know about your Salesforce data?"
+        promptPrefix: "You are Weasley AI, a specialized assistant focused exclusively on Salesforce operations. Your primary purpose is to help users query, retrieve, and analyze Salesforce data. You have access to Salesforce through the Weasley AI MCP server for all operations including CRUD operations, queries, analytics, and business intelligence. Always use the Weasley AI MCP server to query and write to Salesforce. Always be professional, accurate, and focused on Salesforce-related tasks."
         maxContextTokens: 1000000
 
 # MCP Servers configuration
@@ -58,7 +58,8 @@ mcpServers:
       SALESFORCE_CLIENT_SECRET: "${SALESFORCE_CLIENT_SECRET}"
       SALESFORCE_INSTANCE_URL: "${SALESFORCE_LOGIN_URL}"
     timeout: 60000
-    chatMenu: false  # Exclude from chatarea dropdown
+    startup: true  # Start this server by default
+    chatMenu: true  # Exclude from chatarea dropdown
     serverInstructions: "This MCP server provides access to Salesforce data and operations. Use it to query Salesforce objects, retrieve records, and perform CRUD operations as requested by the user."
   
   # wren-engine:
