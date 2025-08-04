@@ -33,13 +33,14 @@ modelSpecs:
   list:
     - name: "weasley-ai-salesforce"
       label: "Weasley AI - Salesforce Assistant"
+      iconURL: "./images/Weasley.png"
       default: true
       description: "Specialized AI assistant for Salesforce data queries and operations"
-      showIconInMenu: true
-      showIconInHeader: true
+      showIconInMenu: false
+      showIconInHeader: false
       preset:
         endpoint: "google"
-        modelLabel: "gemini-2.5-pro"
+        modelLabel: "Weasley"
         model: "gemini-2.5-pro"
         temperature: 0.3
         greeting: "Hello! I'm Weasley AI, your specialized Salesforce assistant. I can help you query Salesforce data, retrieve records, perform operations, and provide advanced analytics. I have access to Salesforce operations through the Weasley AI MCP server. What would you like to know about your Salesforce data?"
@@ -95,4 +96,4 @@ endpoints:
       fetch: false  # Disable fetching other models
     titleConvo: true
     titleModel: "gemini-2.5-pro"
-    modelDisplayLabel: "Gemini 2.5 Pro"
+    modelDisplayLabel: "Weasley"

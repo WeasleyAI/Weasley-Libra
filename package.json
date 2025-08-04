@@ -145,5 +145,8 @@
       "admin/",
       "packages/"
     ]
+  },
+  "dependencies": {
+    "@librechat/client": "^0.2.0"
   }
 }

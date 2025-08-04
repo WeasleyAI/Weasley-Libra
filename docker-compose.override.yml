@@ -1,0 +1,13 @@
+services:
+  api:
+    # Build locally to include custom theme changes and MCP integration
+    build:
+      context: .
+      target: node
+      
+    image: librechat-local
+    
+    volumes:
+      - type: bind
+        source: ./librechat.yaml
+        target: /app/librechat.yaml

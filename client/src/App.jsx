@@ -10,6 +10,8 @@ import { ScreenshotProvider, useApiErrorBoundary } from './hooks';
 import { getThemeFromEnv } from './utils/getThemeFromEnv';
 import { LiveAnnouncer } from '~/a11y';
 import { router } from './routes';
+import { useEffect } from 'react';
+// Removed ThemeDebug import - using direct logging instead
 
 const App = () => {
   const { setError } = useApiErrorBoundary();
@@ -26,6 +28,25 @@ const App = () => {
 
   // Load theme from environment variables if available
   const envTheme = getThemeFromEnv();
+
+  // Direct logging for theme debugging - runs on component mount
+  useEffect(() => {
+    console.log('🎨 App Component - Theme Debugging (on mount):');
+    console.log('Theme from env:', envTheme);
+    console.log('localStorage color-theme:', localStorage.getItem('color-theme'));
+    console.log('localStorage theme-colors:', localStorage.getItem('theme-colors'));
+    console.log('localStorage theme-name:', localStorage.getItem('theme-name'));
+    
+    // Log computed CSS variables
+    const root = document.documentElement;
+    const computedStyle = getComputedStyle(root);
+    console.log('CSS Variables:');
+    console.log('--primary:', computedStyle.getPropertyValue('--primary'));
+    console.log('--secondary:', computedStyle.getPropertyValue('--secondary'));
+    console.log('--accent:', computedStyle.getPropertyValue('--accent'));
+    console.log('--background:', computedStyle.getPropertyValue('--background'));
+    console.log('--foreground:', computedStyle.getPropertyValue('--foreground'));
+  }, []); // Empty dependency array = runs only on mount
 
   return (
     <QueryClientProvider client={queryClient}>
