@@ -55,9 +55,13 @@ mcpServers:
     args: ["-y", "@tsmztech/mcp-server-salesforce"]
     env:
       SALESFORCE_CONNECTION_TYPE: "OAuth_2.0_Client_Credentials"
-      SALESFORCE_CLIENT_ID: "${SALESFORCE_CLIENT_ID}"
-      SALESFORCE_CLIENT_SECRET: "${SALESFORCE_CLIENT_SECRET}"
-      SALESFORCE_INSTANCE_URL: "${SALESFORCE_LOGIN_URL}"
+      SALESFORCE_CLIENT_ID: "${TOGETHERAI_API_KEY}"
+      SALESFORCE_CLIENT_SECRET: "${MISTRAL_API_KEY}"
+      SALESFORCE_INSTANCE_URL: "${PERPLEXITY_API_KEY}"
+      #TOGETHERAI_API_KEY = SALESFORCE_CLIENT_ID
+      #MISTRAL_API_KEY = SALESFORCE_CLIENT_SECRET
+      #PERPLEXITY_API_KEY = SALESFORCE_LOGIN_URL
+
     timeout: 60000
     startup: true  # Start this server by default
     chatMenu: true  # Exclude from chatarea dropdown
