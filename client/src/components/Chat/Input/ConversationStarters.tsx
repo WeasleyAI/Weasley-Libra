@@ -3,13 +3,16 @@ import { EModelEndpoint, Constants } from 'librechat-data-provider';
 import { useChatContext, useAgentsMapContext, useAssistantsMapContext } from '~/Providers';
 import { useGetAssistantDocsQuery, useGetEndpointsQuery } from '~/data-provider';
 import { getIconEndpoint, getEntity } from '~/utils';
-import { useSubmitMessage } from '~/hooks';
+import { useSubmitMessage, useLocalize } from '~/hooks';
+import { useChatFormContext } from '~/Providers';
 
 const ConversationStarters = () => {
   const { conversation } = useChatContext();
   const agentsMap = useAgentsMapContext();
   const assistantMap = useAssistantsMapContext();
   const { data: endpointsConfig } = useGetEndpointsQuery();
+  const { setValue } = useChatFormContext();
+  const localize = useLocalize();
 
   const endpointType = useMemo(() => {
     let ep = conversation?.endpoint ?? '';
@@ -41,6 +44,14 @@ const ConversationStarters = () => {
     assistant_id: conversation?.assistant_id,
   });
 
+  // Default sample prompts for new chats
+  const defaultSamplePrompts = useMemo(() => [
+    localize('com_sample_prompts_latest_leads'),
+    localize('com_sample_prompts_create_contact'),
+    localize('com_sample_prompts_support_cases'),
+    localize('com_sample_prompts_update_opportunity')
+  ], [localize]);
+
   const conversation_starters = useMemo(() => {
     if (entity?.conversation_starters?.length) {
       return entity.conversation_starters;
@@ -50,10 +61,25 @@ const ConversationStarters = () => {
       return [];
     }
 
-    return documentsMap.get(entity?.id ?? '')?.conversation_starters ?? [];
-  }, [documentsMap, isAgent, entity]);
+    const documentStarters = documentsMap.get(entity?.id ?? '')?.conversation_starters ?? [];
+    if (documentStarters.length > 0) {
+      return documentStarters;
+    }
+
+    // Return default sample prompts when no specific starters are available
+    return defaultSamplePrompts;
+  }, [documentsMap, isAgent, entity, defaultSamplePrompts]);
 
   const { submitMessage } = useSubmitMessage();
+  
+  const handleConversationStarterClick = useCallback(
+    (text: string) => {
+      // Fill the input field with the prompt text but don't send it
+      setValue('text', text, { shouldValidate: true });
+    },
+    [setValue],
+  );
+
   const sendConversationStarter = useCallback(
     (text: string) => submitMessage({ text }),
     [submitMessage],
@@ -64,16 +90,16 @@ const ConversationStarters = () => {
   }
 
   return (
-    <div className="mt-8 flex flex-wrap justify-center gap-3 px-4">
+    <div className="mb-4 flex flex-wrap justify-center gap-2 px-4">
       {conversation_starters
         .slice(0, Constants.MAX_CONVO_STARTERS)
         .map((text: string, index: number) => (
           <button
             key={index}
-            onClick={() => sendConversationStarter(text)}
-            className="relative flex w-40 cursor-pointer flex-col gap-2 rounded-2xl border border-border-medium px-3 pb-4 pt-3 text-start align-top text-[15px] shadow-[0_0_2px_0_rgba(0,0,0,0.05),0_4px_6px_0_rgba(0,0,0,0.02)] transition-colors duration-300 ease-in-out fade-in hover:bg-surface-tertiary"
+            onClick={() => handleConversationStarterClick(text)}
+            className="relative flex w-48 flex-shrink-0 cursor-pointer flex-col gap-1 rounded-lg border border-border-medium px-3 py-2 text-start align-top text-[12px] shadow-sm transition-all duration-200 ease-in-out hover:bg-surface-tertiary hover:shadow-md"
           >
-            <p className="break-word line-clamp-3 overflow-hidden text-balance break-all text-text-secondary">
+            <p className="break-words line-clamp-2 overflow-hidden text-balance text-text-secondary leading-tight">
               {text}
             </p>
           </button>
