@@ -191,7 +191,7 @@ export function useMCPServerManager() {
           cleanupServerState(serverName);
           return;
         }
-      }, 3500);
+      }, 500);
 
       updateServerState(serverName, { pollInterval });
     },
@@ -347,6 +347,26 @@ export function useMCPServerManager() {
     },
     [connectionStatus, setMCPValues, initializeServer, isInitializing],
   );
+
+  // Auto-select and initialize MCP servers configured with `startup: true` on first load
+  // Always auto-connect Salesforce MCP instantly if configured for startup
+  const hasAutoInitializedRef = useRef(false);
+  useEffect(() => {
+    if (hasAutoInitializedRef.current) {
+      return;
+    }
+    const cfg = startupConfig?.mcpServers as Record<string, { startup?: boolean; chatMenu?: boolean }> | undefined;
+    if (!cfg) {
+      return;
+    }
+
+    // If Salesforce is in config and marked for startup
+    if (cfg.salesforce?.startup === true && cfg.salesforce?.chatMenu !== false) {
+      hasAutoInitializedRef.current = true;
+      initializeServer('salesforce', true); // autoOpenOAuth = true
+    }
+  }, [startupConfig?.mcpServers, initializeServer]);
+
 
   const toggleServerSelection = useCallback(
     (serverName: string) => {
