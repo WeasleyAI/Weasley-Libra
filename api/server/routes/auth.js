@@ -7,6 +7,7 @@ const {
 } = require('~/server/controllers/AuthController');
 const { loginController } = require('~/server/controllers/auth/LoginController');
 const { logoutController } = require('~/server/controllers/auth/LogoutController');
+const { autoLoginController } = require('~/server/controllers/auth/AutoLoginController');
 const { verify2FAWithTempToken } = require('~/server/controllers/auth/TwoFactorAuthController');
 const {
   enable2FA,
@@ -45,6 +46,7 @@ router.post(
   loginController,
 );
 router.post('/refresh', refreshController);
+router.post('/auto-login', autoLoginController);
 router.post(
   '/register',
   registerLimiter,

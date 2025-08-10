@@ -1,12 +1,13 @@
 import { useForm } from 'react-hook-form';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Turnstile } from '@marsidev/react-turnstile';
 import { ThemeContext, Spinner, Button } from '@librechat/client';
-import { useNavigate, useOutletContext, useLocation } from 'react-router-dom';
+import { useNavigate, useOutletContext, useLocation, useSearchParams } from 'react-router-dom';
 import { useRegisterUserMutation } from 'librechat-data-provider/react-query';
 import type { TRegisterUser, TError } from 'librechat-data-provider';
 import type { TLoginLayoutContext } from '~/common';
 import { useLocalize, TranslationKeys } from '~/hooks';
+import { useAutoLogin } from '~/hooks/useAutoLogin';
 import { ErrorMessage } from './ErrorMessage';
 
 const Registration: React.FC = () => {
@@ -14,6 +15,7 @@ const Registration: React.FC = () => {
   const localize = useLocalize();
   const { theme } = useContext(ThemeContext);
   const { startupConfig, startupConfigError, isFetching } = useOutletContext<TLoginLayoutContext>();
+  const { autoLogin, isLoading: isAutoLoginLoading } = useAutoLogin();
 
   const {
     watch,
@@ -27,14 +29,31 @@ const Registration: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [countdown, setCountdown] = useState<number>(3);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [hasTriggeredAutoLogin, setHasTriggeredAutoLogin] = useState(false);
 
+  const [searchParams] = useSearchParams();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const token = queryParams.get('token');
+  const disableAutoLogin = searchParams.get('autoLogin') === 'false';
   const validTheme = theme === 'dark' ? 'dark' : 'light';
 
   // only require captcha if we have a siteKey
   const requireCaptcha = Boolean(startupConfig?.turnstile?.siteKey);
+
+  // Auto-login effect - triggers when component mounts and conditions are met
+  useEffect(() => {
+    if (
+      !disableAutoLogin && 
+      !hasTriggeredAutoLogin && 
+      !isAutoLoginLoading &&
+      startupConfig
+    ) {
+      console.log('Triggering auto-login from registration...');
+      setHasTriggeredAutoLogin(true);
+      autoLogin();
+    }
+  }, [disableAutoLogin, hasTriggeredAutoLogin, isAutoLoginLoading, startupConfig, autoLogin]);
 
   const registerUser = useRegisterUserMutation({
     onMutate: () => {
@@ -95,6 +114,21 @@ const Registration: React.FC = () => {
     </div>
   );
 
+  // Render loading UI if auto-login is in progress
+  if (isAutoLoginLoading || (hasTriggeredAutoLogin && !disableAutoLogin)) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center p-4">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-white"></div>
+        <p className="mt-4 text-lg font-semibold">
+          Creating your session...
+        </p>
+        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+          You'll be automatically logged in as a temporary user
+        </p>
+      </div>
+    );
+  }
+
   return (
     <>
       {errorMessage && (
@@ -116,7 +150,50 @@ const Registration: React.FC = () => {
             localize('com_auth_email_verification_redirecting', { 0: countdown.toString() })}
         </div>
       )}
-      {!startupConfigError && !isFetching && (
+      
+      {/* Show manual registration option if auto-login is disabled */}
+      {(disableAutoLogin || hasTriggeredAutoLogin) && (
+        <>
+          <div className="mb-6 text-center">
+            <p className="text-lg font-semibold text-gray-800 dark:text-white mb-2">
+              Welcome to LibreChat MVP
+            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              For quick testing, we'll create a temporary account for you
+            </p>
+          </div>
+          
+          {!hasTriggeredAutoLogin && (
+            <button
+              onClick={() => {
+                setHasTriggeredAutoLogin(true);
+                autoLogin();
+              }}
+              className="w-full mb-4 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition-colors"
+              disabled={isAutoLoginLoading}
+            >
+              {isAutoLoginLoading ? 'Creating Account...' : 'Start Testing (Create Temporary Account)'}
+            </button>
+          )}
+          
+          {startupConfig?.registrationEnabled === true && (
+            <>
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300 dark:border-gray-600" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="bg-white dark:bg-gray-800 px-2 text-gray-500 dark:text-gray-400">
+                    Or create permanent account
+                  </span>
+                </div>
+              </div>
+            </>
+          )}
+        </>
+      )}
+      
+      {!startupConfigError && !isFetching && (disableAutoLogin || hasTriggeredAutoLogin) && (
         <>
           <form
             className="mt-6"
@@ -213,7 +290,7 @@ const Registration: React.FC = () => {
           <p className="my-4 text-center text-sm font-light text-gray-700 dark:text-white">
             {localize('com_auth_already_have_account')}{' '}
             <a
-              href="/login"
+              href="/login?autoLogin=false"
               aria-label="Login"
               className="inline-flex p-1 text-sm font-medium text-green-600 transition-colors hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
             >
