@@ -18,7 +18,7 @@ interface:
   # Keep other UI elements as needed
   endpointsMenu: true
   parameters: true
-  sidePanel: true
+  sidePanel: false
   presets: true
   prompts: false
   bookmarks: false
