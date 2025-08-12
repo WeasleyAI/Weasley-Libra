@@ -18,7 +18,7 @@ interface:
   # Keep other UI elements as needed
   endpointsMenu: true
   parameters: true
-  sidePanel: true
+  sidePanel: false
   presets: true
   prompts: false
   bookmarks: false
@@ -55,9 +55,9 @@ mcpServers:
     args: ["-y", "@tsmztech/mcp-server-salesforce"]
     env:
       SALESFORCE_CONNECTION_TYPE: "OAuth_2.0_Client_Credentials"
-      SALESFORCE_CLIENT_ID: "${ SALESFORCE_CLIENT_ID}"
-      SALESFORCE_CLIENT_SECRET: "${ SALESFORCE_CLIENT_SECRET}"
-      SALESFORCE_INSTANCE_URL: "${ SALESFORCE_INSTANCE_URL}"
+      SALESFORCE_CLIENT_ID: "${SALESFORCE_CLIENT_ID}"
+      SALESFORCE_CLIENT_SECRET: "${SALESFORCE_CLIENT_SECRET}"
+      SALESFORCE_INSTANCE_URL: "${SALESFORCE_INSTANCE_URL}"
       # SALESFORCE_CLIENT_ID: "${TOGETHERAI_API_KEY}"
       # SALESFORCE_CLIENT_SECRET: "${MISTRAL_API_KEY}"
       # SALESFORCE_INSTANCE_URL: "${PERPLEXITY_API_KEY}"
