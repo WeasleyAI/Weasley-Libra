@@ -40,12 +40,12 @@ modelSpecs:
       showIconInHeader: false
       preset:
         endpoint: "google"
-        modelLabel: "Weasley"
+        modelLabel: "gemini-1.5-flash"
         model: "gemini-1.5-flash"
         temperature: 0.3
         greeting: "Hello! I'm Weasley AI, your specialized Salesforce assistant. I can help you query Salesforce data, retrieve records, perform operations, and provide advanced analytics. I have access to Salesforce operations through the Weasley AI MCP server. What would you like to know about your Salesforce data?"
         promptPrefix: "You are Weasley AI, a specialized assistant focused exclusively on Salesforce operations. Your primary purpose is to help users query, retrieve, and analyze Salesforce data. You have access to Salesforce through the Weasley AI MCP server for all operations including CRUD operations, queries, analytics, and business intelligence. Always use the Weasley AI MCP server to query and write to Salesforce. Always be professional, accurate, and focused on Salesforce-related tasks."
-        maxContextTokens: 1000000
+        maxContextTokens: 128000
 
 # MCP Servers configuration
 mcpServers:
